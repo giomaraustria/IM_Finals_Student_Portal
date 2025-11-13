@@ -1,5 +1,6 @@
 CREATE TABLE student(
   student_id    VARCHAR(10)   NOT NULL
+ ,course_id     VARCHAR(10)   NOT NULL
  ,last_name     VARCHAR(100)  DEFAULT''
  ,first_name    VARCHAR(100)  DEFAULT''
  ,middle_name   VARCHAR(100)  DEFAULT''
@@ -14,6 +15,7 @@ CREATE TABLE student(
  ,block_no      INT           DEFAULT 0
  ,status        VARCHAR(1)    DEFAULT'A'
  ,CONSTRAINT student_id_pk PRIMARY KEY(student_id) 
+ ,CONSTRAINT course_id_fk FOREIGN KEY(course_id) REFERENCES course(course_id)
 );
 
 CREATE TABLE student_email(
@@ -23,6 +25,13 @@ CREATE TABLE student_email(
  ,CONSTRAINT student_id_fk FOREIGN KEY(student_id) REFERENCES student(student_id) 
 );
 
+CREATE TABLE student_contact_no(
+  student_id  VARCHAR(10) NOT NULL
+ ,phone_no    VARCHAR(12) DEFAULT''
+ ,CONSTRAINT student_contact_no_pk PRIMARY KEY(student_id, phone_no)
+ ,CONSTRAINT student_id_fk1 FOREIGN KEY(student_id) REFERENCES student(student_id) 
+);
+
 CREATE TABLE college(
   college_id    VARCHAR(10)   NOT NULL
  ,college_name  VARCHAR(500)  DEFAULT''
@@ -30,4 +39,11 @@ CREATE TABLE college(
  ,CONSTRAINT college_id_pk PRIMARY KEY(college_id) 
 );
 
-CREATE TABLE course
+CREATE TABLE course(
+  course_id   VARCHAR(10)   NOT NULL
+ ,college_id  VARCHAR(10)   NOT NULL
+ ,course_name VARCHAR(500)  DEFAULT''
+ ,status      VARCHAR(1)    DEFAULT'A'
+ ,CONSTRAINT course_id_pk PRIMARY KEY(course_id)
+ ,CONSTRAINT college_id_fk FOREIGN KEY(college_id) REFERENCES college(college_id)
+);
