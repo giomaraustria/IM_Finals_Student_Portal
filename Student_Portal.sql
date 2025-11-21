@@ -241,7 +241,8 @@ CREATE TABLE ADMIN_CONTACT_NO(
 CREATE TABLE ROOM(
   room_id         VARCHAR(10) NOT NULL
  ,room_capacity   INTEGER     DEFAULT 0
- ,building        VARCHAR(50) DEFAULT''
+ ,building_name   VARCHAR(50) DEFAULT''
+ ,building_code   VARCHAR(50) DEFAULT''
  ,room_no         INTEGER     DEFAULT 0
  ,CONSTRAINT room_id_pk PRIMARY KEY(room_id) 
 );
@@ -285,4 +286,5 @@ CREATE TABLE APPROVALS(
  ,CONSTRAINT request_id_pk PRIMARY KEY(request_id)
  ,CONSTRAINT user_id_fk_4 FOREIGN KEY(user_id) REFERENCES portal_user(user_id)
 );
+
 
