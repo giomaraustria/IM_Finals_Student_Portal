@@ -6,6 +6,7 @@ CREATE TABLE STUDENT(
  ,last_name   VARCHAR(100) NOT NULL 
  ,first_name  VARCHAR(100) NOT NULL 
  ,middle_name VARCHAR(100) NOT NULL  
+ ,middle_initial  VARCHAR(1)    DEFAULT''
  ,gender      VARCHAR(6)   DEFAULT''
  ,birthday    DATE         DEFAULT'12-OCT-9999'
  ,age         INTEGER      DEFAULT 0
@@ -144,6 +145,7 @@ CREATE TABLE FACULTY(
  ,last_name           VARCHAR(100)  NOT NULL
  ,first_name          VARCHAR(100)  NOT NULL
  ,middle_name         VARCHAR(100)  NOT NULL
+ ,middle_initial      VARCHAR(1)    DEFAULT''
  ,gender              VARCHAR(6)    DEFAULT''
  ,birthday            DATE          DEFAULT'12-OCT-9999'
  ,age                 INTEGER       DEFAULT 0
@@ -213,6 +215,7 @@ CREATE TABLE PORTAL_ADMIN(
  ,last_name       VARCHAR(100)  DEFAULT''
  ,first_name      VARCHAR(100)  DEFAULT''
  ,middle_name     VARCHAR(100)  DEFAULT''
+ ,middle_initial  VARCHAR(1)    DEFAULT''
  ,gender          VARCHAR(6)    DEFAULT''
  ,birthday        DATE          DEFAULT'12-OCT-9999'
  ,age             INTEGER       DEFAULT 0
@@ -286,5 +289,6 @@ CREATE TABLE APPROVALS(
  ,CONSTRAINT request_id_pk PRIMARY KEY(request_id)
  ,CONSTRAINT user_id_fk_4 FOREIGN KEY(user_id) REFERENCES portal_user(user_id)
 );
+
 
 
