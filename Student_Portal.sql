@@ -56,6 +56,7 @@ CREATE TABLE COURSE(
 CREATE TABLE COLLEGE(
   college_id    VARCHAR(10)   NOT NULL
  ,college_name  VARCHAR(300)  DEFAULT''
+ ,college_code  VARCHAR(20)   DEFAULT''
  ,dean          VARCHAR(300)  DEFAULT''
  ,CONSTRAINT college_id_pk PRIMARY KEY(college_id) 
 );
@@ -241,6 +242,19 @@ CREATE TABLE ADMIN_CONTACT_NO(
  ,CONSTRAINT admin_id_fk FOREIGN KEY(admin_id) REFERENCES portal_admin(admin_id) 
 );
 
+CREATE TABLE ADMIN_ADDRESS(
+  AD_address_id VARCHAR(10)  NOT NULL
+ ,admin_id    VARCHAR(10)  NOT NULL
+ ,house_no      VARCHAR(300) DEFAULT''
+ ,street        VARCHAR(300) DEFAULT''
+ ,brgy          VARCHAR(300) DEFAULT''
+ ,town          VARCHAR(300) DEFAULT''
+ ,city          VARCHAR(300) DEFAULT''
+ ,zipcode       INTEGER      DEFAULT 0
+ ,CONSTRAINT AD_address_id_pk PRIMARY KEY(AD_address_id) 
+ ,CONSTRAINT admin_id_fk_2 FOREIGN KEY(admin_id) REFERENCES portal_admin(admin_id) 
+);
+
 CREATE TABLE ROOM(
   room_id         VARCHAR(10) NOT NULL
  ,room_capacity   INTEGER     DEFAULT 0
@@ -269,11 +283,13 @@ CREATE TABLE ANNOUNCEMENT(
   announcement_id VARCHAR(10)   NOT NULL
  ,posted_by       VARCHAR(10)   NOT NULL
  ,subject_id      VARCHAR(10)   NOT NULL
+ ,college_id      VARCHAR(10)   NOT NULL
  ,date_posted     DATE          DEFAULT SYSDATE
  ,ann_content     VARCHAR(1000) NOT NULL
  ,status          VARCHAR(20)   DEFAULT'On-going' 
  ,deadline        DATE          DEFAULT''
  ,CONSTRAINT announcement_id_pk PRIMARY KEY(announcement_id) 
+ ,CONSTRAINT college_id_fk_2 FOREIGN KEY(college_id) REFERENCES college(college_id)
  ,CONSTRAINT posted_by_fk FOREIGN KEY(posted_by) REFERENCES portal_user(user_id)
  ,CONSTRAINT subject_id_fk_3 FOREIGN KEY(subject_id) REFERENCES subject(subject_id)
 );
@@ -291,4 +307,78 @@ CREATE TABLE APPROVALS(
 );
 
 
+--VIEWS 
 
+--ADMIN INFORMATION 
+CREATE OR REPLACE VIEW vw_admin_info AS
+SELECT pa.admin_id                                               "Admin ID"
+      ,pa.last_name || ',' || pa.first_name || pa.middle_initial "Name"
+      ,pa.admin_position                                         "Position"
+      ,d.department_name || '(' || department_code || ')'        "Department"
+      ,pa.email                                                  "Email"
+      ,pa.status                                                 "System Status"
+      ,ll.login_datetime                                         "Last Login"
+FROM PORTAL_ADMIN pa
+  INNER JOIN DEPARTMENT d
+   ON pa.department_id = d.department_id
+  INNER JOIN LOGIN_LOG ll
+   ON pa.user_id = ll.user_id;
+
+-- ADMIN ANNOUNCEMENT
+CREATE OR REPLACE VIEW vw_admin_announcement AS
+SELECT a.date_posted                                  "Date Posted"
+      ,c.college_name || '(' || c.college_code || ')' "College Department"
+      ,a.ann_content                                  "Content" 
+      ,a.status                                       "Status"
+      ,a.deadline                                     "Deadline"
+ FROM ANNOUNCEMENT a
+  INNER JOIN COLLEGE c
+    ON a.college_id = c.college_id;
+
+--ADMIN PROFILE 
+CREATE OR REPLACE VIEW vw_admin_profile AS
+SELECT pa.last_name     "Last Name"
+      ,pa.first_name    "First Name"
+      ,pa.middle_name   "Middle Name"
+      ,pa.gender        "Gender"
+      ,TRIM( NVL(ad.house_no, ' ') ||' ' ||
+             NVL(ad.street, ' ')   ||' ' || 
+             NVL(ad.brgy, ' ')     ||' ' || 
+             NVL(ad.town, ' ')     ||' ' || 
+             NVL(ad.city, ' ')    
+            )            "Address"     
+      ,pa.age            "Age" 
+      ,pa.birthday       "Birth Date" 
+      ,pa.nationality    "Nationality"
+      ,pa.civil_status   "Civil Status"
+      ,ac.contact_no     "Mobile Number"
+      ,ac.tin_no         "TIN No"
+      ,ac.sss_no         "SSS No"
+      ,ac.pag_ibig_no    "Pag-ibig No"
+      ,ac.philhealth_no  "PhilHealth No" 
+      ,ac.gsis_no        "GSIS Number"
+FROM PORTAL_ADMIN pa
+  INNER JOIN ADMIN_ADDRESS ad
+    ON pa.admin_id = ad.admin_id
+  INNER JOIN ADMIN_CONTACT_NO ac
+    ON pa.admin_id = ac.admin_id;
+
+-- COLLEGE INFORMATION
+CREATE OR REPLACE VIEW vw_college_info AS
+SELECT c.college_code   "College Name"
+      ,c.dean           "Dean"
+      ,s.school_year    "School Year"
+      ,s.sem            "Sem"
+      ,f.faculty_id     "Faculty ID"
+      ,f.last_name || ',' || 
+       f.first_name|| ',' || 
+       f.middle_initial "Faculty Name" 
+      ,f.title          "Title"
+      ,f.email          "Email" 
+  FROM COLLEGE c
+    INNER JOIN FACULTY f
+     ON c.college_id = f.college_id
+    INNER JOIN SCHEDULE s
+     ON f.faculty_id = s.faculty_id;
+
+-- S
